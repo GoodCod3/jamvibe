@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 
+
 type IRootLayout = {
     children: ReactElement | ReactElement[],
 };
@@ -7,7 +8,7 @@ type IRootLayout = {
 const RootLayout = ({ children }: IRootLayout) => {
     return (
         <>
-            <h1>RootLayout</h1>
+            <header></header>
             {children}
         </>
     );

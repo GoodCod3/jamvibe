@@ -1,10 +1,12 @@
-import type { NextPageWithLayout } from '@/interfaces/NextPageWithLayout';
 import RootLayout from '@/components/Layout';
 
 
-const Home: NextPageWithLayout = () => {
+const Home = () => {
     return (
         <RootLayout>
+            <main>
+
+            </main>
             <h1>HOME</h1>
         </RootLayout>
     );
