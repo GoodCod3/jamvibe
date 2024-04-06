@@ -10,7 +10,7 @@ const RootLayout = ({ children }: IRootLayout) => {
         <>
             <div className="wrapper">
                 <header>
-                    Jam Vibe
+                    Jam Vibe App
                 </header>
                 <article>
                     {children}

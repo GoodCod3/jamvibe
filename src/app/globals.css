@@ -25,6 +25,17 @@ body {
   height: 100%;
 }
 
+.wrapper {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: 1fr 4fr;
+  grid-template-areas:
+    "header  header"
+    "sidebar content"
+    "footer  footer";
+  min-height: 100vh;
+}
+
 header {
   grid-area: header;
   padding: 20px;
@@ -62,13 +73,22 @@ footer {
   background-color: #fd9644;
   text-align: center;
 }
-.wrapper {
+
+/* Home */
+
+.audio_data {
   display: grid;
-  grid-gap: 20px;
-  grid-template-columns: 1fr 4fr;
+  text-align: center;
   grid-template-areas:
-    "header  header"
-    "sidebar content"
-    "footer  footer";
-  min-height: 100vh;
+    "file_name current_time export_audio"
+    "play_audio play_audio play_audio";
+}
+
+.audio_data .file_name {
+  grid-area: "file_name";
+}
+
+.play_audio {
+  text-align: center;
+  padding: 10px;
 }
