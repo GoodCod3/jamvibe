@@ -1,11 +1,13 @@
 import type { NextPageWithLayout } from '@/interfaces/NextPageWithLayout';
-import { getLayout } from '@/app/render';
+import RootLayout from '@/components/Layout';
 
 
-const App: NextPageWithLayout = () => {
-    return <p>hello world</p>
+const Home: NextPageWithLayout = () => {
+    return (
+        <RootLayout>
+            <h1>HOME</h1>
+        </RootLayout>
+    );
 };
 
-App.getLayout = getLayout;
-
-export default App;
+export default Home;
