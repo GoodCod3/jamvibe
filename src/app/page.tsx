@@ -4,9 +4,6 @@ import RootLayout from '@/components/Layout';
 const Home = () => {
     return (
         <RootLayout>
-            <main>
-
-            </main>
             <h1>HOME</h1>
         </RootLayout>
     );
