@@ -1,10 +1,17 @@
-import styles from "./page.module.css";
+import type { ReactElement } from 'react';
+import type { NextPageWithLayout } from '@/interfaces/NextPageWithLayout';
 
 
-export default function Home() {
+const Page: NextPageWithLayout = () => {
+    return <p>hello world</p>
+};
+
+Page.getLayout = function getLayout(page: ReactElement) {
     return (
-        <main className={styles.main}>
-            
-        </main>
-    );
-}
+        <>
+            {page}
+        </>
+    )
+};
+
+export default Page;
