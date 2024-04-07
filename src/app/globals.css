@@ -139,11 +139,10 @@ button {
 
 .audio_recorded_item {
   display: grid;
-  grid-template-areas:
-    "title playButton"
-    "waveform waveform";
-  grid-gap: 20px;
-  grid-template-columns: 3fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  height: 300px;
 }
 
 .audio_recorded_item .record_title {
@@ -155,8 +154,13 @@ button {
 
 .audio_recorded_item .record_play_button {
   grid-area: "playButton";
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .audio_recorded_item .record_waveform {
   grid-area: "waveform";
+  grid-column: 1 / span 2;
+  grid-row: 2;
 }

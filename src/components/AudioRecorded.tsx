@@ -45,7 +45,7 @@ const AudioRecorded = ({ number, audioRecorded, audioRecordedUrl }: IAudioRecord
         waveColor: 'rgb(200, 0, 200)',
         progressColor: 'rgb(100, 0, 100)',
         url: audioRecordedUrl,
-        height: 100,
+        height: 70,
         barWidth: 4,
         barGap: 2,
         barRadius: 2,
