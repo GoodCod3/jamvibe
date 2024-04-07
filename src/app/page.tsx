@@ -31,7 +31,11 @@ const Home = () => {
 
     const onPlayPause = useCallback(() => {
         wavesurfer && wavesurfer.playPause()
-    }, [wavesurfer])
+    }, [wavesurfer]);
+
+    const onClickNewRecord = () => {
+
+    };
 
     return (
         <RootLayout>
@@ -56,6 +60,18 @@ const Home = () => {
                 </div>
             </div>
             <div ref={containerRef} />
+
+
+            <div className="content">
+                <div className="effects"></div>
+                <div className="list_audio">
+                    <div className="record_button">
+                        <button style={{ minWidth: '5em' }}>
+                            New Record
+                        </button>
+                    </div>
+                </div>
+            </div>
         </RootLayout>
     );
 };

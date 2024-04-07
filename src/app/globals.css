@@ -74,6 +74,12 @@ footer {
   text-align: center;
 }
 
+/* Buttons */
+button {
+  padding: 1rem;
+}
+
+
 /* Home */
 
 .audio_data {
@@ -91,4 +97,31 @@ footer {
 .play_audio {
   text-align: center;
   padding: 10px;
+}
+
+.record_button {
+  text-align: center;
+}
+
+.content {
+  display: grid;
+  grid-template-areas: "effects effects list_audio";
+  height: calc(100vh - 500px);
+  grid-gap: 20px;
+  grid-template-columns: 3fr 1fr;
+  margin-top: 10px;
+
+}
+
+.content .effects {
+  grid-area: "effects";
+  border: 1px solid red;
+  padding: 10px;
+}
+
+.content .list_audio {
+  grid-area: "list_audio";
+  border: 1px solid red;
+  padding: 10px;
+
 }
