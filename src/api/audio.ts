@@ -79,6 +79,7 @@ class AudioAPI {
     async startRecording() {
         if (!this.isRecording && this.isBrowserCompatible()) {
             try {
+                // this.recordedChunks =  [];
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
                 this.mediaRecorder = new MediaRecorder(stream);
@@ -99,10 +100,23 @@ class AudioAPI {
 
     stopRecording() {
         if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+            return new Promise((resolve) => {
+                this.mediaRecorder?.addEventListener('stop', () => {
+                    resolve(new Blob(this.recordedChunks, { type: 'audio/webm' }));
+                });
+                this.mediaRecorder?.stop();
+                this.isRecording = false;
+                this.mediaRecorder = null;
+            });
+        }
+        return Promise.resolve(null);
+    }
+
+    stopRecording2() {
+        if (this.isRecording && this.mediaRecorder && this.mediaRecorder.state === 'recording') {
             this.mediaRecorder.stop();
             this.isRecording = false;
             const blobs = [...this.recordedChunks];
-            this.recordedChunks = [];
 
             return blobs;
         }

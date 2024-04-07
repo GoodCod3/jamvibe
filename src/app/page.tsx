@@ -5,7 +5,6 @@ import React, {
     useState,
     useMemo,
     useCallback,
-    useEffect,
 } from 'react';
 import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js'
 import { useWavesurfer } from '@wavesurfer/react';
@@ -18,12 +17,11 @@ import AudioRecorded from '@/components/AudioRecorded';
 const formatTime = (seconds: number) => [seconds / 60, seconds % 60].map((v) => `0${Math.floor(v)}`.slice(-2)).join(':')
 
 const Home = () => {
-    const [audioRecorder] = useState(new AudioAPI());
     const [isRecording, setIsRecording] = useState(false);
     const [audiosRecorded, setAudiosRecorded] = useState<Blob[]>([]);
 
     const containerRef = useRef(null);
-    // const audioAPIRef = useRef(new AudioAPI());
+    const audioAPIRef = useRef(new AudioAPI());
     const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
         container: containerRef,
         waveColor: 'rgb(200, 0, 200)',
@@ -40,33 +38,18 @@ const Home = () => {
         wavesurfer && wavesurfer.playPause();
     }, [wavesurfer]);
 
-    // const onClickNewRecord = () => {
-    //     if (isRecording) {
-    //         const audioBlobs = audioAPIRef.current.stopRecording();
-    //         if (audioBlobs) {
-    //             console.log(audioBlobs);
-    //             // setAudiosRecorded([...audiosRecorded, ...audioBlobs]);
-    //         }
-    //         setIsRecording(false);
-    //     } else {
-    //         audioAPIRef.current.startRecording();
-    //         setIsRecording(true);
-    //     }
-    // };
 
     const handleStartRecording = () => {
-        audioRecorder.startRecording();
+        audioAPIRef.current.startRecording();
         setIsRecording(true);
     };
 
-    const handleStopRecording = () => {
-        const recordedBlob = audioRecorder.stopRecording();
+    const handleStopRecording = async () => {
+        const recordedBlob = await audioAPIRef.current.stopRecording() as Blob;
         setIsRecording(false);
 
         if (recordedBlob) {
-            console.log('Audio grabado:', recordedBlob[0]);
-            console.log([...audiosRecorded, ...recordedBlob]);
-            setAudiosRecorded([...audiosRecorded, ...recordedBlob]);
+            setAudiosRecorded([...audiosRecorded, ...[recordedBlob]]);
         }
     };
 
@@ -78,7 +61,7 @@ const Home = () => {
         }
     };
 
-    if (audioRecorder.isBrowserCompatible()) {
+    if (audioAPIRef.current.isBrowserCompatible()) {
         return (
             <RootLayout>
                 <div className="save_audio">
@@ -120,7 +103,7 @@ const Home = () => {
                                         <AudioRecorded
                                             number={index + 1}
                                             audioRecorded={audioRecorded}
-                                            audioRecordedUrl={audioRecorder.getRecordedAudioUrl(audioRecorded)}
+                                            audioRecordedUrl={audioAPIRef.current.getRecordedAudioUrl(audioRecorded)}
                                         />
                                     </li>
                                 ))}
