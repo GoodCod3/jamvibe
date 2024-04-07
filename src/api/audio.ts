@@ -79,7 +79,7 @@ class AudioAPI {
     async startRecording() {
         if (!this.isRecording && this.isBrowserCompatible()) {
             try {
-                // this.recordedChunks =  [];
+                this.recordedChunks =  [];
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
                 this.mediaRecorder = new MediaRecorder(stream);
