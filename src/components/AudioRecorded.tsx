@@ -2,12 +2,10 @@
 
 import React, {
     useRef,
-    useState,
     useMemo,
     useCallback,
-    useEffect,
 } from 'react';
-import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js'
+import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js'
 import { useWavesurfer } from '@wavesurfer/react';
 
 import { bytesToMegabytes } from '@/utils/blobs';
@@ -19,6 +17,27 @@ type IAudioRecorded = {
     audioRecordedUrl: string,
 };
 
+const topTimeline = TimelinePlugin.create({
+    height: 20,
+    insertPosition: 'beforebegin',
+    timeInterval: 0.2,
+    primaryLabelInterval: 5,
+    secondaryLabelInterval: 1,
+    style: {
+        fontSize: '20px',
+        color: '#2D5B88',
+    },
+});
+const bottomTimline = TimelinePlugin.create({
+    height: 10,
+    timeInterval: 0.1,
+    primaryLabelInterval: 1,
+    style: {
+        fontSize: '10px',
+        color: '#6A3274',
+    },
+});
+
 const AudioRecorded = ({ number, audioRecorded, audioRecordedUrl }: IAudioRecorded) => {
     const containerRef = useRef(null);
     const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
@@ -27,10 +46,10 @@ const AudioRecorded = ({ number, audioRecorded, audioRecordedUrl }: IAudioRecord
         progressColor: 'rgb(100, 0, 100)',
         url: audioRecordedUrl,
         height: 100,
-        barWidth: 6,
+        barWidth: 4,
         barGap: 2,
         barRadius: 2,
-        plugins: useMemo(() => [Timeline.create()], []),
+        plugins: useMemo(() => [topTimeline, bottomTimline], []),
     });
 
     const onPlayPause = useCallback(() => {

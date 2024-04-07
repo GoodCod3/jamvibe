@@ -142,6 +142,8 @@ button {
   grid-template-areas:
     "title playButton"
     "waveform waveform";
+  grid-gap: 20px;
+  grid-template-columns: 3fr 1fr;
 }
 
 .audio_recorded_item .record_title {
