@@ -6,7 +6,7 @@ type IRootLayout = {
 };
 
 const RootLayout = ({ children }: IRootLayout) => {
-    if (window.AudioContext) {
+    if (window.AudioContext || window) {
         return (
             <>
                 <div className="wrapper">

@@ -46,11 +46,9 @@ class AudioAPI {
         return this.recordedChunks;
     }
 
-    playRecordedAudio() {
-        const blob = new Blob(this.recordedChunks, { type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(blob);
-        const recordedAudio = document.getElementById('recordedAudio') as HTMLAudioElement;
-        recordedAudio.src = audioUrl;
+    getRecordedAudioUrl(index:number) {
+        const blob = new Blob([this.recordedChunks[index]], { type: 'audio/wav' });
+        return URL.createObjectURL(blob);
     }
 }
 

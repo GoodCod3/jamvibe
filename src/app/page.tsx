@@ -8,10 +8,11 @@ import React, {
     useEffect,
 } from 'react';
 import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js'
+import { useWavesurfer } from '@wavesurfer/react';
 
 import RootLayout from '@/components/Layout';
-import { useWavesurfer } from '@wavesurfer/react';
 import AudioAPI from '@/api/audio';
+import AudioRecorded from '@/components/AudioRecorded';
 
 
 const formatTime = (seconds: number) => [seconds / 60, seconds % 60].map((v) => `0${Math.floor(v)}`.slice(-2)).join(':')
@@ -19,6 +20,8 @@ const formatTime = (seconds: number) => [seconds / 60, seconds % 60].map((v) => 
 const Home = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [audiosRecorded, setAudiosRecorded] = useState<Blob[]>([]);
+    const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
+
     const containerRef = useRef(null);
     const audioAPIRef = useRef(new AudioAPI());
     const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
@@ -37,15 +40,20 @@ const Home = () => {
         wavesurfer && wavesurfer.playPause();
     }, [wavesurfer]);
 
+    const onClickPlayRecordedAudio = () => {
+        const recordedAudioUrl = audioAPIRef.current.getRecordedAudioUrl();
+        console.log(recordedAudioUrl);
+        setRecordedAudioUrl(recordedAudioUrl);
+
+    };
+
     const onClickNewRecord = () => {
         if (isRecording) {
             const audioBlobs = audioAPIRef.current.stopRecording();
-            console.log(audioBlobs);
             if (audioBlobs) {
                 setAudiosRecorded([...audioBlobs]);
             }
             setIsRecording(false);
-
         } else {
             audioAPIRef.current.startRecording();
             setIsRecording(true);
@@ -91,9 +99,21 @@ const Home = () => {
                         <div className="record_audios">
                             <ul>
                                 {audiosRecorded.map((audioRecorded, index) => (
-                                    <li key={`recorded_${index}`}>Record #{index * 1} - {audioRecorded.size}</li>
+                                    <li key={`recorded_${index}`}>
+                                        <AudioRecorded 
+                                            number={index + 1} 
+                                            size={audioRecorded.size}
+                                            audioRecorded={audioRecorded}
+                                            audioRecordedUrl={audioAPIRef.current.getRecordedAudioUrl(index)}
+                                         />
+                                    </li>
                                 ))}
                             </ul>
+                            {/* {recordedAudioUrl && (
+                                <div>
+                                    <audio src={recordedAudioUrl} controls />
+                                </div>
+                            )} */}
                         </div>
                     </div>
                 </div>
