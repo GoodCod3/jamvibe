@@ -126,3 +126,35 @@ button {
   border: 1px solid red;
   padding: 10px;
 }
+
+.record_audios ul {
+  list-style: none;
+}
+
+.record_audios ul li {
+  border: 1px solid red;
+  margin: 10px 0 10px 0;
+  padding: 5px;
+}
+
+.audio_recorded_item {
+  display: grid;
+  grid-template-areas:
+    "title playButton"
+    "waveform waveform";
+}
+
+.audio_recorded_item .record_title {
+  grid-area: "title";
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.audio_recorded_item .record_play_button {
+  grid-area: "playButton";
+}
+
+.audio_recorded_item .record_waveform {
+  grid-area: "waveform";
+}

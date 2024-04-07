@@ -14,12 +14,11 @@ import { useWavesurfer } from '@wavesurfer/react';
 
 type IAudioRecorded = {
     number: number,
-    size: number,
     audioRecorded: Blob,
     audioRecordedUrl: string,
 };
 
-const AudioRecorded = ({ number, size, audioRecorded, audioRecordedUrl }: IAudioRecorded) => {
+const AudioRecorded = ({ number, audioRecorded, audioRecordedUrl }: IAudioRecorded) => {
     const containerRef = useRef(null);
     const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
         container: containerRef,
@@ -32,22 +31,25 @@ const AudioRecorded = ({ number, size, audioRecorded, audioRecordedUrl }: IAudio
         barRadius: 2,
         plugins: useMemo(() => [Timeline.create()], []),
     });
-    
+
     const onPlayPause = useCallback(() => {
         wavesurfer && wavesurfer.playPause();
     }, [wavesurfer]);
 
-    // useEffect(() => {
-    //     wavesurfer?.loadBlob(audioRecorded);
-    // }, []);
-
     return (
-        <>
-            Record # {number} - Size: {size}
-            <button onClick={onPlayPause}>Play record</button>
-            <div ref={containerRef} />
+        <div className='audio_recorded_item'>
+            <div className="record_title">
+                Record # {number} - Size: {audioRecorded.size}
+            </div>
+            <div className="record_play_button">
+                <button onClick={onPlayPause}>
+                    {isPlaying ? 'Pause' : 'Play'}
+                </button>
+            </div>
+            <div className="record_waveform" ref={containerRef}>
+            </div>
 
-        </>
+        </div>
     );
 
 };

@@ -18,12 +18,12 @@ import AudioRecorded from '@/components/AudioRecorded';
 const formatTime = (seconds: number) => [seconds / 60, seconds % 60].map((v) => `0${Math.floor(v)}`.slice(-2)).join(':')
 
 const Home = () => {
+    const [audioRecorder] = useState(new AudioAPI());
     const [isRecording, setIsRecording] = useState(false);
     const [audiosRecorded, setAudiosRecorded] = useState<Blob[]>([]);
-    const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
 
     const containerRef = useRef(null);
-    const audioAPIRef = useRef(new AudioAPI());
+    // const audioAPIRef = useRef(new AudioAPI());
     const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
         container: containerRef,
         waveColor: 'rgb(200, 0, 200)',
@@ -40,28 +40,45 @@ const Home = () => {
         wavesurfer && wavesurfer.playPause();
     }, [wavesurfer]);
 
-    const onClickPlayRecordedAudio = () => {
-        const recordedAudioUrl = audioAPIRef.current.getRecordedAudioUrl();
-        console.log(recordedAudioUrl);
-        setRecordedAudioUrl(recordedAudioUrl);
+    // const onClickNewRecord = () => {
+    //     if (isRecording) {
+    //         const audioBlobs = audioAPIRef.current.stopRecording();
+    //         if (audioBlobs) {
+    //             console.log(audioBlobs);
+    //             // setAudiosRecorded([...audiosRecorded, ...audioBlobs]);
+    //         }
+    //         setIsRecording(false);
+    //     } else {
+    //         audioAPIRef.current.startRecording();
+    //         setIsRecording(true);
+    //     }
+    // };
 
+    const handleStartRecording = () => {
+        audioRecorder.startRecording();
+        setIsRecording(true);
     };
 
-    const onClickNewRecord = () => {
-        if (isRecording) {
-            const audioBlobs = audioAPIRef.current.stopRecording();
-            if (audioBlobs) {
-                setAudiosRecorded([...audioBlobs]);
-            }
-            setIsRecording(false);
-        } else {
-            audioAPIRef.current.startRecording();
-            setIsRecording(true);
+    const handleStopRecording = () => {
+        const recordedBlob = audioRecorder.stopRecording();
+        setIsRecording(false);
+
+        if (recordedBlob) {
+            console.log('Audio grabado:', recordedBlob[0]);
+            console.log([...audiosRecorded, ...recordedBlob]);
+            setAudiosRecorded([...audiosRecorded, ...recordedBlob]);
         }
     };
 
-    if (audioAPIRef.current.isBrowserCompatible()) {
+    const onClickNewRecordButton = () => {
+        if (isRecording) {
+            handleStopRecording();
+        } else {
+            handleStartRecording();
+        }
+    };
 
+    if (audioRecorder.isBrowserCompatible()) {
         return (
             <RootLayout>
                 <div className="save_audio">
@@ -91,7 +108,7 @@ const Home = () => {
                     <div className="effects"></div>
                     <div className="list_audio">
                         <div className="record_button">
-                            <button onClick={onClickNewRecord}>
+                            <button onClick={onClickNewRecordButton}>
                                 {isRecording ? 'Stop Recording' : 'Start Recording'}
                             </button>
                         </div>
@@ -100,20 +117,14 @@ const Home = () => {
                             <ul>
                                 {audiosRecorded.map((audioRecorded, index) => (
                                     <li key={`recorded_${index}`}>
-                                        <AudioRecorded 
-                                            number={index + 1} 
-                                            size={audioRecorded.size}
+                                        <AudioRecorded
+                                            number={index + 1}
                                             audioRecorded={audioRecorded}
-                                            audioRecordedUrl={audioAPIRef.current.getRecordedAudioUrl(index)}
-                                         />
+                                            audioRecordedUrl={audioRecorder.getRecordedAudioUrl(audioRecorded)}
+                                        />
                                     </li>
                                 ))}
                             </ul>
-                            {/* {recordedAudioUrl && (
-                                <div>
-                                    <audio src={recordedAudioUrl} controls />
-                                </div>
-                            )} */}
                         </div>
                     </div>
                 </div>
