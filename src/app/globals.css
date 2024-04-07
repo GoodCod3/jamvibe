@@ -74,11 +74,14 @@ footer {
   text-align: center;
 }
 
+.compability_error {
+  text-align: center;
+}
+
 /* Buttons */
 button {
   padding: 1rem;
 }
-
 
 /* Home */
 
@@ -110,7 +113,6 @@ button {
   grid-gap: 20px;
   grid-template-columns: 3fr 1fr;
   margin-top: 10px;
-
 }
 
 .content .effects {
@@ -123,5 +125,4 @@ button {
   grid-area: "list_audio";
   border: 1px solid red;
   padding: 10px;
-
 }
