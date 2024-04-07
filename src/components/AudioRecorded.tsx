@@ -8,8 +8,9 @@ import React, {
     useEffect,
 } from 'react';
 import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js'
-
 import { useWavesurfer } from '@wavesurfer/react';
+
+import { bytesToMegabytes } from '@/utils/blobs';
 
 
 type IAudioRecorded = {
@@ -39,7 +40,7 @@ const AudioRecorded = ({ number, audioRecorded, audioRecordedUrl }: IAudioRecord
     return (
         <div className='audio_recorded_item'>
             <div className="record_title">
-                Record # {number} - Size: {audioRecorded.size}
+                # {number} - Size: {bytesToMegabytes(audioRecorded.size)} Mb.
             </div>
             <div className="record_play_button">
                 <button onClick={onPlayPause}>
