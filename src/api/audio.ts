@@ -2,9 +2,12 @@ class AudioAPI {
     private mediaRecorder: MediaRecorder | null = null;
     private recordedChunks: Blob[] = [];
     private isRecording: boolean = false;
+    private lastRecordedBlob: Blob | null = null;
 
     constructor() {
+        
         if ((window && (window as any).AudioContext) && navigator.mediaDevices.getUserMedia) {
+            this.indexedDBManager = new IndexedDBManager();
             this.startRecording = this.startRecording.bind(this);
             this.stopRecording = this.stopRecording.bind(this);
             this.handleDataAvailable = this.handleDataAvailable.bind(this);
@@ -39,29 +42,22 @@ class AudioAPI {
         }
     }
 
-    stopRecording() {
+    async stopRecording() {
         if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-            return new Promise((resolve) => {
+            return new Promise<void>((resolve) => {
                 this.mediaRecorder?.addEventListener('stop', () => {
-                    resolve(new Blob(this.recordedChunks, { type: 'audio/webm' }));
+                    this.lastRecordedBlob = new Blob(this.recordedChunks, { type: 'audio/webm' });
+
+                    resolve();
                 });
                 this.mediaRecorder?.stop();
                 this.isRecording = false;
-                this.mediaRecorder = null;
             });
         }
-        return Promise.resolve(null);
     }
 
-    stopRecording2() {
-        if (this.isRecording && this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-            this.mediaRecorder.stop();
-            this.isRecording = false;
-            const blobs = [...this.recordedChunks];
-
-            return blobs;
-        }
-        return [];
+    getLastRecordedBlob() {
+        return this.lastRecordedBlob;
     }
 
     getRecordedAudioUrl(bloblAudio: Blob) {
