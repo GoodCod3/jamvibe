@@ -80,7 +80,7 @@ footer {
 
 /* Buttons */
 button {
-  padding: 1rem;
+  padding: 0.3rem;
 }
 
 /* Home */
@@ -134,7 +134,7 @@ button {
 .record_audios ul li {
   border: 1px solid red;
   margin: 10px 0 10px 0;
-  padding: 5px;
+  /* padding: 5px; */
 }
 
 .audio_recorded_item {
@@ -142,7 +142,7 @@ button {
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 10px;
-  height: 300px;
+  /* height: 300px; */
 }
 
 .audio_recorded_item .record_title {
