@@ -13,6 +13,9 @@ import IndexDBManager from '@/api/indexdb';
 
 const Home = () => {
     const [isRecording, setIsRecording] = useState(false);
+    const [isRecordingDisabled, setIsRecordingDisabled] = useState(false);
+    const [isFreJam, setIsFreJam] = useState(false);
+    const [isFreJamDisabled, setIsFreJamDisabled] = useState(false);
     const [audiosRecorded, setAudiosRecorded] = useState<Blob[]>([]);
 
     const audioAPIRef = useRef(new AudioAPI());
@@ -47,9 +50,24 @@ const Home = () => {
         }
     };
 
+    const onClickFreeJam = () => {
+        if (!(isFreJamDisabled)) {
+            if (isFreJam) {
+                console.log('Ending free jam');
+                setIsFreJam(false);
+            } else {
+                console.log('Starting free jam');
+                setIsFreJam(true);
+            }
+        }
+    };
+
     if (audioAPIRef.current.isBrowserCompatible()) {
         return (
             <RootLayout>
+                <button onClick={onClickFreeJam}>
+                    {isFreJam ? 'Stop Jam' : 'Start Jam'}
+                </button>
                 <div className="content">
                     <div className="effects"></div>
                     <div className="list_audio">
