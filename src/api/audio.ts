@@ -7,7 +7,6 @@ class AudioAPI {
     constructor() {
         
         if ((window && (window as any).AudioContext) && navigator.mediaDevices.getUserMedia) {
-            this.indexedDBManager = new IndexedDBManager();
             this.startRecording = this.startRecording.bind(this);
             this.stopRecording = this.stopRecording.bind(this);
             this.handleDataAvailable = this.handleDataAvailable.bind(this);
