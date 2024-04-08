@@ -8,6 +8,7 @@ import React, {
 import RootLayout from '@/components/Layout';
 import AudioAPI from '@/api/audio';
 import AudioRecorded from '@/components/AudioRecorded';
+import IndexDBManager from '@/api/indexdb';
 
 
 const Home = () => {
@@ -15,23 +16,24 @@ const Home = () => {
     const [audiosRecorded, setAudiosRecorded] = useState<Blob[]>([]);
 
     const audioAPIRef = useRef(new AudioAPI());
+    const indexDBManager = useRef(new IndexDBManager());
 
     const handleStartRecording = () => {
         audioAPIRef.current.startRecording();
         setIsRecording(true);
     };
 
+    const onStopRecording = async (recordedBlob: Blob) => {
+        await indexDBManager.current.addRecording(recordedBlob);
+
+        setAudiosRecorded([...audiosRecorded, recordedBlob]);
+    };
+
     const handleStopRecording = async () => {
         try {
-            await audioAPIRef.current.stopRecording();
-
-            const recordedBlob = audioAPIRef.current.getLastRecordedBlob();
+            await audioAPIRef.current.stopRecording(onStopRecording);
 
             setIsRecording(false);
-
-            if (recordedBlob) {
-                setAudiosRecorded([...audiosRecorded, ...[recordedBlob]]);
-            }
         } catch (error) {
             console.error(error);
         }

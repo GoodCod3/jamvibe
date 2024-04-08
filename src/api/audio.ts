@@ -5,7 +5,7 @@ class AudioAPI {
     private lastRecordedBlob: Blob | null = null;
 
     constructor() {
-        
+
         if ((window && (window as any).AudioContext) && navigator.mediaDevices.getUserMedia) {
             this.startRecording = this.startRecording.bind(this);
             this.stopRecording = this.stopRecording.bind(this);
@@ -22,7 +22,7 @@ class AudioAPI {
     async startRecording() {
         if (!this.isRecording && this.isBrowserCompatible()) {
             try {
-                this.recordedChunks =  [];
+                this.recordedChunks = [];
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
                 this.mediaRecorder = new MediaRecorder(stream);
@@ -41,17 +41,15 @@ class AudioAPI {
         }
     }
 
-    async stopRecording() {
+    async stopRecording(onRecordingStop: (blob: Blob) => void) {
         if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-            return new Promise<void>((resolve) => {
-                this.mediaRecorder?.addEventListener('stop', () => {
-                    this.lastRecordedBlob = new Blob(this.recordedChunks, { type: 'audio/webm' });
+            this.mediaRecorder.addEventListener('stop', () => {
+                const recordedBlob = new Blob(this.recordedChunks, { type: 'audio/webm' });
 
-                    resolve();
-                });
-                this.mediaRecorder?.stop();
-                this.isRecording = false;
+                onRecordingStop(recordedBlob);
             });
+            this.mediaRecorder.stop();
+            this.isRecording = false;
         }
     }
 
