@@ -53,10 +53,11 @@ const Home = () => {
     const onClickFreeJam = () => {
         if (!(isFreJamDisabled)) {
             if (isFreJam) {
-                console.log('Ending free jam');
+                audioAPIRef.current.stopAudioCapture();
                 setIsFreJam(false);
             } else {
-                console.log('Starting free jam');
+                audioAPIRef.current.initAudioContext();
+                audioAPIRef.current.startAudioCapture();
                 setIsFreJam(true);
             }
         }
