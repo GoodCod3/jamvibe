@@ -5,10 +5,10 @@ import React, {
     useMemo,
     useCallback,
 } from 'react';
-import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js';
+import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js'
 import { useWavesurfer } from '@wavesurfer/react';
 
-import { bytesToMegabytes } from '../utils/blobs';
+import { bytesToMegabytes } from '@/utils/blobs';
 
 
 type IAudioRecorded = {
@@ -28,7 +28,6 @@ const topTimeline = TimelinePlugin.create({
         color: '#2D5B88',
     },
 });
-
 const bottomTimline = TimelinePlugin.create({
     height: 10,
     timeInterval: 0.1,
