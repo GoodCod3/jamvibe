@@ -26,20 +26,19 @@ class AudioAPI {
             enabled: false,
             node: null,
             settings: {
-                amount: 400 // Valor predeterminado
+                amount: 400,
             }
         },
         delay: {
             enabled: false,
             node: null,
             settings: {
-                delayTime: 0.5 // Valor predeterminado
+                delayTime: 0.5,
             }
         }
     };
 
     constructor() {
-
         if (this.isBrowserCompatible()) {
             this.startRecording = this.startRecording.bind(this);
             this.stopRecording = this.stopRecording.bind(this);
@@ -58,6 +57,8 @@ class AudioAPI {
     }
 
     createEffectNode(effectName: string, settings: any): any {
+        console.log(`Creatring effect: ${effectName}`);
+
         switch (effectName) {
             case 'distortion':
                 const distortionNode = this.audioContext!.createWaveShaper();
@@ -91,21 +92,26 @@ class AudioAPI {
     }
 
     initAudioContext(): void {
-        const bufferSize = 4096; // Puedes ajustar este valor según tus necesidades
+        const bufferSize = 4096
 
         this.audioContext = new AudioContext();
         // this.audioContext = new AudioContext({ sampleRate: bufferSize });
     }
 
     startAudioCapture(): void {
-
         if (this.audioContext) {
-            navigator.mediaDevices.getUserMedia({ audio: true })
+            navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: false,
+                    autoGainControl: false,
+                    noiseSuppression: false,
+                }
+            })
                 .then(stream => {
                     this.guitarStream = stream;
-                    console.log('Tamaño del búfer actual:', this.audioContext.baseLatency);
-                    console.log('Tamaño del búfer actual:', this.audioContext.outputLatency);
-                    let guitarInput = this.audioContext.createMediaStreamSource(this.guitarStream);
+                    console.log('Tamaño del búfer actual:', this.audioContext!.baseLatency);
+                    console.log('Tamaño del búfer actual:', this.audioContext!.outputLatency);
+                    let guitarInput = this.audioContext!.createMediaStreamSource(this.guitarStream);
                     // for (const effectName in this.effects) {
                     //     const effect = this.effects[effectName];
                     //     if (effect.enabled) {
@@ -118,7 +124,7 @@ class AudioAPI {
                     //     }
                     // }
 
-                    const outputNode = this.audioContext.destination;
+                    const outputNode = this.audioContext!.destination;
 
                     guitarInput.connect(outputNode);
                 })
@@ -157,13 +163,13 @@ class AudioAPI {
     }
 
     toggleEffectEnabled(effectName: string, isEnabled: boolean): void {
-        // Suponiendo que tienes una lista de efectos con sus estados
-        // Puedes buscar el efecto por su nombre y actualizar su estado
-        const effect: Effect = this.effects.find((effect: Effect) => effect.name === effectName);
-        if (effect) {
+        const effectEntry: [string, Effect] | undefined = Object.entries(this.effects).find(([key]) => key === effectName);
+        if (effectEntry) {
+            const effect = effectEntry[1];
             effect.enabled = isEnabled;
         }
     }
+
     async startRecording() {
         if (!this.isRecording && this.isBrowserCompatible()) {
             try {
