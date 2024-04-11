@@ -187,7 +187,7 @@ class AudioAPI {
     }
 
     handleDataAvailable(event: BlobEvent) {
-        if (event.data && event.data.size > 0) {
+        if (event.data.size > 0) {
             this.recordedChunks.push(event.data);
         }
     }
