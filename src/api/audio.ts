@@ -92,7 +92,7 @@ class AudioAPI {
     }
 
     initAudioContext(): void {
-        const bufferSize = 4096
+        // const bufferSize = 4096
 
         this.audioContext = new AudioContext();
         // this.audioContext = new AudioContext({ sampleRate: bufferSize });

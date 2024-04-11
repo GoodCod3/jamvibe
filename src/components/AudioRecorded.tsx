@@ -41,7 +41,7 @@ const bottomTimline = TimelinePlugin.create({
 
 const AudioRecorded = ({ number, audioRecorded, audioRecordedUrl }: IAudioRecorded) => {
     const containerRef = useRef(null);
-    const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
+    const { wavesurfer, isPlaying } = useWavesurfer({
         container: containerRef,
         waveColor: 'rgb(200, 0, 200)',
         progressColor: 'rgb(100, 0, 100)',
