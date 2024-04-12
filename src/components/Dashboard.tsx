@@ -14,8 +14,6 @@ const Home = () => {
     const [isFreeJam, setisFreeJam] = useState(false);
     const [audiosRecorded, setAudiosRecorded] = useState<Blob[]>([]);
     // Effects states
-    const [isdistortionApplied, setIsdistortionApplied] = useState(false);
-
     const audioAPIRef = useRef(new AudioAPI());
     const indexDBManager = useRef(new IndexDBManager());
 
