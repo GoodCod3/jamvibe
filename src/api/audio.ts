@@ -1,3 +1,4 @@
+import { makeDistortionCurve } from './effects/';
 
 type EffectSettings = Record<string, any>;
 
@@ -26,14 +27,14 @@ class AudioAPI {
             enabled: false,
             node: null,
             settings: {
-                amount: 400,
+                amount: 800,
             }
         },
         delay: {
             enabled: false,
             node: null,
             settings: {
-                delayTime: 0.5,
+                delayTime: 0,
             }
         }
     };
@@ -62,7 +63,8 @@ class AudioAPI {
         switch (effectName) {
             case 'distortion':
                 const distortionNode = this.audioContext!.createWaveShaper();
-                distortionNode.curve = this.makeDistortionCurve(settings.amount);
+                distortionNode.curve = makeDistortionCurve(settings.amount);
+                distortionNode.oversample = '4x';
                 return distortionNode;
             case 'delay':
                 const delayNode = this.audioContext!.createDelay();
@@ -71,19 +73,6 @@ class AudioAPI {
             default:
                 return null;
         }
-    }
-
-    makeDistortionCurve(amount: number): Float32Array {
-        const sampleCount = 44100;
-        const curve = new Float32Array(sampleCount);
-        const deg = Math.PI / 180;
-
-        for (let i = 0; i < sampleCount; ++i) {
-            const x = (i * 2) / sampleCount - 1;
-            curve[i] = (3 + amount) * x * 20 * deg / (Math.PI + amount * Math.abs(x));
-        }
-
-        return curve;
     }
 
     restartAudioCapture(): void {
@@ -109,24 +98,85 @@ class AudioAPI {
             })
                 .then(stream => {
                     this.guitarStream = stream;
+
+                    console.log('Buffer size:', this.audioContext!.baseLatency);
+                    console.log('Output latency:', this.audioContext!.outputLatency);
+                    console.log('Latency:', this.audioContext!.outputLatency);
+
+                    let guitarInput = this.audioContext!.createMediaStreamSource(this.guitarStream);
+                    for (const effectName in this.effects) {
+                        const effect = this.effects[effectName];
+                        if (effect.enabled || true) {
+                            console.log(`Applying effect: ${effectName}`);
+                            console.log(effect.settings);
+                            console.log("-------------");
+                            effect.node = this.createEffectNode(effectName, effect.settings);
+                            guitarInput.connect(effect.node);
+                            guitarInput = effect.node;
+                        }
+                    }
+
+                    // Crear y conectar el nodo de ganancia
+                    const gainNode = this.audioContext!.createGain();
+                    gainNode.gain.value = 1;
+                    guitarInput.connect(gainNode);
+
+
+                    // Conectar el nodo de ganancia al destino de audio
+                    gainNode.connect(this.audioContext!.destination);
+
+                })
+                .catch(error => {
+                    console.error('Error accessing microphone:', error);
+                });
+        } else {
+            console.error('AudioContext not initialized.');
+            return;
+        }
+    }
+
+
+    startAudioCapture2(): void {
+        if (this.audioContext) {
+
+            navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: false,
+                    autoGainControl: false,
+                    noiseSuppression: false,
+                }
+            })
+                .then(stream => {
+                    this.guitarStream = stream;
                     console.log('Tamaño del búfer actual:', this.audioContext!.baseLatency);
                     console.log('Tamaño del búfer actual:', this.audioContext!.outputLatency);
+                    console.log('Latency:', this.audioContext!.outputLatency);
                     let guitarInput = this.audioContext!.createMediaStreamSource(this.guitarStream);
-                    // for (const effectName in this.effects) {
-                    //     const effect = this.effects[effectName];
-                    //     if (effect.enabled) {
-                    //         console.log(`Aplicando el efecto: ${effectName}`);
-                    //         console.log(effect.settings);
-                    //         console.log("-------------");
-                    //         effect.node = this.createEffectNode(effectName, effect.settings);
-                    //         guitarInput.connect(effect.node);
-                    //         guitarInput = effect.node;
-                    //     }
-                    // }
+                    for (const effectName in this.effects) {
+                        const effect = this.effects[effectName];
+                        if (effect.enabled || true) {
+                            console.log(`Aplicando el efecto: ${effectName}`);
+                            console.log(effect.settings);
+                            console.log("-------------");
+                            effect.node = this.createEffectNode(effectName, effect.settings);
 
-                    const outputNode = this.audioContext!.destination;
+                            guitarInput.connect(effect.node);
+                            guitarInput = effect.node;
+                        }
+                    }
 
-                    guitarInput.connect(outputNode);
+                    const outputNode: AudioNode = this.audioContext!.destination;
+                    const gainNode = this.audioContext!.createGain();
+                    gainNode.gain.value = 1;
+                    outputNode.connect(gainNode); // Conecta la ganancia al destino de audio
+                    gainNode.connect(this.audioContext!.destination); // Conecta la ganancia al destino de audio
+
+
+
+
+                    // const outputNode = this.audioContext!.createMediaStreamDestination();
+
+                    // guitarInput.connect(outputNode);
                 })
                 .catch(error => {
                     console.error('Error accessing microphone:', error);
@@ -156,9 +206,6 @@ class AudioAPI {
                 this.effects[effectName].node = updatedNode;
                 this.restartAudioCapture();
             }
-        } else {
-            console.log(this.effects)
-            console.log(effectName)
         }
     }
 

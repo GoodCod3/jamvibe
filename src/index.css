@@ -118,13 +118,11 @@ button {
 
 .content .effects {
   grid-area: "effects";
-  border: 1px solid red;
   padding: 10px;
 }
 
 .content .list_audio {
   grid-area: "list_audio";
-  border: 1px solid red;
   padding: 10px;
 }
 
@@ -133,7 +131,6 @@ button {
 }
 
 .record_audios ul li {
-  border: 1px solid red;
   margin: 10px 0 10px 0;
   /* padding: 5px; */
 }
@@ -166,9 +163,107 @@ button {
   grid-row: 2;
 }
 
+/* Pedal */
+.pedal {
+  background: rgb(168, 119, 27);
+  width: 270px;
+  height: 360px;
+  border-radius: 10px;
+  border-bottom: 5px solid rgba(0, 0, 0, 0.3);
+  border-right: 2px solid rgba(0, 0, 0, 0.3);
+  font-family: "Questrial", sans-serif;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 3px 5px 2px 0px rgba(0, 0, 0, 0.2);
+  float: left;
+  margin: 10px;
+}
 
-/* Effects */
+.knobs {
+  width: 100%;
+  overflow: hidden;
+  padding: 5px;
+  padding-left: 13px;
+  padding-right: 13px;
+  height: 120px;
+  background: rgba(0, 0, 0, 0.1);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
 
-/* .blues_driver {
-  
-} */
+.knob-wrap {
+  width: 70px;
+  float: left;
+  overflow: hidden;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.8);
+  font-size: 14px;
+  font-weight: bold;
+  margin: 5px;
+}
+
+.led {
+  width: 100%;
+  height: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.led:before {
+  display: block;
+  content: "";
+  margin: 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #aa0000;
+  box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.pedal.on .led:before {
+  background: #ff0000;
+  box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.5),
+    0 0 10px rgba(255, 200, 200, 0.7);
+}
+
+.pedal-base {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.8);
+  font-size: 24px;
+  font-weight: bold;
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 5%
+  );
+  padding: 10px;
+  padding-top: 20px;
+  position: relative;
+}
+
+.pedal-base small {
+  font-size: 14px;
+  font-weight: bold;
+  display: block;
+  text-align: right;
+  padding-right: 20px;
+}
+
+.pedal-base .base-click {
+  display: block;
+  position: absolute;
+  bottom: 15px;
+  left: 10px;
+  margin: 0 auto;
+  height: 130px;
+  width: 245px;
+  border-radius: 10px;
+  background: #333333;
+  border-bottom: 2px solid #000000;
+  border-right: 2px solid #000000;
+  cursor: pointer;
+  content: "";
+}

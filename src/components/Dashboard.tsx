@@ -6,6 +6,7 @@ import React, { useRef, useState } from 'react';
 import AudioAPI from '../api/audio';
 import IndexDBManager from '../api/indexdb';
 import AudioRecorded from '../components/AudioRecorded';
+import DistortionEffect from '../components/effects/distortion';
 
 
 const Home = () => {
@@ -58,10 +59,8 @@ const Home = () => {
         }
     };
 
-    const onClickDistortion = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newState = !isdistortionApplied;
+    const onClickDistortion = (isEnabled: boolean) => {
         audioAPIRef.current.updateEffectSettings('distortion', { amount: 400 });
-        setIsdistortionApplied(newState);
     };
 
     if (audioAPIRef.current.isBrowserCompatible()) {
@@ -72,10 +71,7 @@ const Home = () => {
                 </button>
                 <div className="content">
                     <div className="effects">
-                        <label>
-                            <input type='checkbox' value={'distortion'} name="distortion_effect" onChange={onClickDistortion} />
-                            Distortion
-                        </label>
+                        <DistortionEffect onClick={onClickDistortion} />
                     </div>
                     <div className="list_audio">
                         <div className="record_button">
