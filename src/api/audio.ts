@@ -11,7 +11,6 @@ class AudioAPI {
     private guitarStream: MediaStream | null = null;
     private guitarInput: MediaStreamAudioSourceNode | null = null;
     private delayNode: DelayNode | null = null;
-    private effects: IEffect[] = effects;
 
     constructor() {
         if (this.isBrowserCompatible()) {
@@ -21,7 +20,6 @@ class AudioAPI {
             this.startAudioCapture = this.startAudioCapture.bind(this);
             this.initAudioContext = this.initAudioContext.bind(this);
             this.stopAudioCapture = this.stopAudioCapture.bind(this);
-            this.updateEffectSettings = this.updateEffectSettings.bind(this);
         } else {
             throw new Error('Your browser is not compatible, you have to update it.');
         }
@@ -48,11 +46,6 @@ class AudioAPI {
                 return null;
         }
     }
-
-    // restartAudioCapture(): void {
-    //     this.stopAudioCapture();
-    //     this.startAudioCapture();
-    // }
 
     initAudioContext(): void {
         // const bufferSize = 4096
@@ -102,56 +95,6 @@ class AudioAPI {
         }
     }
 
-
-    startAudioCapture2(): void {
-        if (this.audioContext) {
-
-            navigator.mediaDevices.getUserMedia({
-                audio: {
-                    echoCancellation: false,
-                    autoGainControl: false,
-                    noiseSuppression: false,
-                }
-            })
-                .then(stream => {
-                    this.guitarStream = stream;
-                    console.log('Tamaño del búfer actual:', this.audioContext!.baseLatency);
-                    console.log('Tamaño del búfer actual:', this.audioContext!.outputLatency);
-                    console.log('Latency:', this.audioContext!.outputLatency);
-                    let guitarInput = this.audioContext!.createMediaStreamSource(this.guitarStream);
-                    for (const effectName in this.effects) {
-                        const effect = this.effects[effectName];
-                        if (effect.enabled || true) {
-                            console.log(`Aplicando el efecto: ${effectName}`);
-                            console.log(effect.settings);
-                            console.log("-------------");
-                            effect.node = this.createEffectNode(effectName, effect.settings);
-
-                            guitarInput.connect(effect.node);
-                            guitarInput = effect.node;
-                        }
-                    }
-
-                    const outputNode: AudioNode = this.audioContext!.destination;
-                    const gainNode = this.audioContext!.createGain();
-                    gainNode.gain.value = 1;
-                    outputNode.connect(gainNode); // Conecta la ganancia al destino de audio
-                    gainNode.connect(this.audioContext!.destination); // Conecta la ganancia al destino de audio
-
-                    // const outputNode = this.audioContext!.createMediaStreamDestination();
-
-                    // guitarInput.connect(outputNode);
-                })
-                .catch(error => {
-                    console.error('Error accessing microphone:', error);
-                });
-        } else {
-            console.error('AudioContext not initialized.');
-            return;
-
-        }
-    }
-
     stopAudioCapture(): void {
         if (this.guitarStream) {
             this.guitarStream.getTracks().forEach(track => {
@@ -160,17 +103,6 @@ class AudioAPI {
 
             this.guitarStream = null;
         }
-    }
-
-    updateEffectSettings(effectName: string, settings: any): void {
-        // if (this.effects[effectName]) {
-        //     this.effects[effectName].settings = settings;
-        //     if (this.effects[effectName].enabled && this.effects[effectName].node) {
-        //         const updatedNode = this.createEffectNode(effectName, settings);
-        //         this.effects[effectName].node = updatedNode;
-        //         this.restartAudioCapture();
-        //     }
-        // }
     }
 
     async startRecording() {

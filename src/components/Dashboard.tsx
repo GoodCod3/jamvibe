@@ -6,7 +6,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import AudioAPI from '../api/audio';
 import IndexDBManager from '../api/indexdb';
 import AudioRecorded from '../components/AudioRecorded';
-import DistortionEffect from '../components/effects/distortion';
+import PedalEffect from './effects/Pedal';
 import { effects } from '../constants/effects';
 import { IEffect } from '../interfaces/effects';
 
@@ -27,8 +27,13 @@ const Home = () => {
     }, [activeEffects]);
 
     const handleStartRecording = () => {
-        audioAPIRef.current.startRecording();
-        setIsRecording(true);
+        if (audiosRecorded.length >= 1) {
+            alert('You can recorded just one song for now.');
+        } else {
+            audioAPIRef.current.startRecording();
+            setIsRecording(true);
+
+        }
     };
 
     const onStopRecording = async (recordedBlob: Blob) => {
@@ -70,10 +75,24 @@ const Home = () => {
         activateEffect('Distortion', isEnabled);
     };
 
-    const activateEffect = (effectName: String, isEnabled:boolean) => {
+    const activateEffect = (effectName: String, isEnabled: boolean) => {
         const updateEffects = activeEffects.map((activeEffect) => {
             if (activeEffect.name === effectName) {
                 return { ...activeEffect, enabled: isEnabled };
+            }
+            return activeEffect;
+        });
+
+        setActiveEffects(updateEffects);
+    };
+
+    const onRotateKnob = (value: number, settingKey: string, effectName: string) => {
+        const updateEffects = activeEffects.map((activeEffect) => {
+            if (activeEffect.name === effectName) {
+                const updatedSettings = { ...activeEffect.settings };
+                updatedSettings[settingKey].value = value;
+
+                return { ...activeEffect, settings: updatedSettings };
             }
             return activeEffect;
         });
@@ -90,9 +109,10 @@ const Home = () => {
                 <div className="content">
                     <div className="effects">
                         {effects.map((effect, index) => (
-                            <DistortionEffect
-                                key={index}
+                            <PedalEffect
+                                key={`pedal_effect_${index}`}
                                 onClick={onClickDistortion}
+                                onRotateKnob={(value: number, settingKey: string) => onRotateKnob(value, settingKey, effect.name)}
                                 {...effect}
                             />
                         ))}
