@@ -1,21 +1,30 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 
 import AudioAPI from '../api/audio';
 import IndexDBManager from '../api/indexdb';
 import AudioRecorded from '../components/AudioRecorded';
 import DistortionEffect from '../components/effects/distortion';
+import { effects } from '../constants/effects';
+import { IEffect } from '../interfaces/effects';
 
 
 const Home = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [isFreeJam, setisFreeJam] = useState(false);
     const [audiosRecorded, setAudiosRecorded] = useState<Blob[]>([]);
+    const [activeEffects, setActiveEffects] = useState<IEffect[]>(effects);
+
     // Effects states
     const audioAPIRef = useRef(new AudioAPI());
     const indexDBManager = useRef(new IndexDBManager());
+
+    useEffect(() => {
+        audioAPIRef.current.stopAudioCapture();
+        audioAPIRef.current.startAudioCapture(activeEffects);
+    }, [activeEffects]);
 
     const handleStartRecording = () => {
         audioAPIRef.current.startRecording();
@@ -52,13 +61,24 @@ const Home = () => {
             setisFreeJam(false);
         } else {
             audioAPIRef.current.initAudioContext();
-            audioAPIRef.current.startAudioCapture();
+            audioAPIRef.current.startAudioCapture(activeEffects);
             setisFreeJam(true);
         }
     };
 
     const onClickDistortion = (isEnabled: boolean) => {
-        audioAPIRef.current.updateEffectSettings('distortion', { amount: 400 });
+        activateEffect('Distortion', isEnabled);
+    };
+
+    const activateEffect = (effectName: String, isEnabled:boolean) => {
+        const updateEffects = activeEffects.map((activeEffect) => {
+            if (activeEffect.name === effectName) {
+                return { ...activeEffect, enabled: isEnabled };
+            }
+            return activeEffect;
+        });
+
+        setActiveEffects(updateEffects);
     };
 
     if (audioAPIRef.current.isBrowserCompatible()) {
@@ -69,7 +89,13 @@ const Home = () => {
                 </button>
                 <div className="content">
                     <div className="effects">
-                        <DistortionEffect onClick={onClickDistortion} />
+                        {effects.map((effect, index) => (
+                            <DistortionEffect
+                                key={index}
+                                onClick={onClickDistortion}
+                                {...effect}
+                            />
+                        ))}
                     </div>
                     <div className="list_audio">
                         <div className="record_button">

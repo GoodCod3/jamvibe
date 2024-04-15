@@ -1,43 +1,17 @@
 import { makeDistortionCurve } from './effects/';
+import { effects } from '../constants/effects';
+import { IEffect, IEffectSettings } from '../interfaces/effects';
 
-type EffectSettings = Record<string, any>;
-
-type Effect = {
-    enabled: boolean;
-    node: any;
-    settings: EffectSettings;
-};
-
-type Effects = {
-    [key: string]: Effect;
-};
 
 class AudioAPI {
     private mediaRecorder: MediaRecorder | null = null;
     private recordedChunks: Blob[] = [];
     private isRecording: boolean = false;
-
-    // Audio capture
     private audioContext: AudioContext | null = null;
     private guitarStream: MediaStream | null = null;
     private guitarInput: MediaStreamAudioSourceNode | null = null;
     private delayNode: DelayNode | null = null;
-    private effects: Effects = {
-        distortion: {
-            enabled: false,
-            node: null,
-            settings: {
-                amount: 800,
-            }
-        },
-        delay: {
-            enabled: false,
-            node: null,
-            settings: {
-                delayTime: 0,
-            }
-        }
-    };
+    private effects: IEffect[] = effects;
 
     constructor() {
         if (this.isBrowserCompatible()) {
@@ -57,28 +31,28 @@ class AudioAPI {
         return !!((window && (window as any).AudioContext) && navigator.mediaDevices.getUserMedia);
     }
 
-    createEffectNode(effectName: string, settings: any): any {
+    createEffectNode(effectName: string, settings: IEffectSettings): any {
         console.log(`Creatring effect: ${effectName}`);
 
         switch (effectName) {
-            case 'distortion':
+            case 'Distortion':
                 const distortionNode = this.audioContext!.createWaveShaper();
-                distortionNode.curve = makeDistortionCurve(settings.amount);
+                distortionNode.curve = makeDistortionCurve(settings.amount.value);
                 distortionNode.oversample = '4x';
                 return distortionNode;
             case 'delay':
                 const delayNode = this.audioContext!.createDelay();
-                delayNode.delayTime.value = settings.delayTime;
+                // delayNode.delayTime.value = settings.delayTime;
                 return delayNode;
             default:
                 return null;
         }
     }
 
-    restartAudioCapture(): void {
-        this.stopAudioCapture();
-        this.startAudioCapture();
-    }
+    // restartAudioCapture(): void {
+    //     this.stopAudioCapture();
+    //     this.startAudioCapture();
+    // }
 
     initAudioContext(): void {
         // const bufferSize = 4096
@@ -87,7 +61,7 @@ class AudioAPI {
         // this.audioContext = new AudioContext({ sampleRate: bufferSize });
     }
 
-    startAudioCapture(): void {
+    startAudioCapture(activeEffects: IEffect[]): void {
         if (this.audioContext) {
             navigator.mediaDevices.getUserMedia({
                 audio: {
@@ -98,33 +72,26 @@ class AudioAPI {
             })
                 .then(stream => {
                     this.guitarStream = stream;
-
                     console.log('Buffer size:', this.audioContext!.baseLatency);
                     console.log('Output latency:', this.audioContext!.outputLatency);
                     console.log('Latency:', this.audioContext!.outputLatency);
 
                     let guitarInput = this.audioContext!.createMediaStreamSource(this.guitarStream);
-                    for (const effectName in this.effects) {
-                        const effect = this.effects[effectName];
-                        if (effect.enabled || true) {
-                            console.log(`Applying effect: ${effectName}`);
-                            console.log(effect.settings);
-                            console.log("-------------");
-                            effect.node = this.createEffectNode(effectName, effect.settings);
-                            guitarInput.connect(effect.node);
-                            guitarInput = effect.node;
-                        }
-                    }
 
-                    // Crear y conectar el nodo de ganancia
+                    activeEffects.forEach((activeEffect) => {
+                        if (activeEffect.enabled) {
+                            activeEffect.node = this.createEffectNode(activeEffect.name, activeEffect.settings);
+                            guitarInput.connect(activeEffect.node);
+                            guitarInput = activeEffect.node;
+                        }
+
+                    });
+
                     const gainNode = this.audioContext!.createGain();
                     gainNode.gain.value = 1;
                     guitarInput.connect(gainNode);
 
-
-                    // Conectar el nodo de ganancia al destino de audio
                     gainNode.connect(this.audioContext!.destination);
-
                 })
                 .catch(error => {
                     console.error('Error accessing microphone:', error);
@@ -171,9 +138,6 @@ class AudioAPI {
                     outputNode.connect(gainNode); // Conecta la ganancia al destino de audio
                     gainNode.connect(this.audioContext!.destination); // Conecta la ganancia al destino de audio
 
-
-
-
                     // const outputNode = this.audioContext!.createMediaStreamDestination();
 
                     // guitarInput.connect(outputNode);
@@ -199,22 +163,14 @@ class AudioAPI {
     }
 
     updateEffectSettings(effectName: string, settings: any): void {
-        if (this.effects[effectName]) {
-            this.effects[effectName].settings = settings;
-            if (this.effects[effectName].enabled && this.effects[effectName].node) {
-                const updatedNode = this.createEffectNode(effectName, settings);
-                this.effects[effectName].node = updatedNode;
-                this.restartAudioCapture();
-            }
-        }
-    }
-
-    toggleEffectEnabled(effectName: string, isEnabled: boolean): void {
-        const effectEntry: [string, Effect] | undefined = Object.entries(this.effects).find(([key]) => key === effectName);
-        if (effectEntry) {
-            const effect = effectEntry[1];
-            effect.enabled = isEnabled;
-        }
+        // if (this.effects[effectName]) {
+        //     this.effects[effectName].settings = settings;
+        //     if (this.effects[effectName].enabled && this.effects[effectName].node) {
+        //         const updatedNode = this.createEffectNode(effectName, settings);
+        //         this.effects[effectName].node = updatedNode;
+        //         this.restartAudioCapture();
+        //     }
+        // }
     }
 
     async startRecording() {

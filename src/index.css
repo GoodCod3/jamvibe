@@ -165,7 +165,6 @@ button {
 
 /* Pedal */
 .pedal {
-  background: rgb(168, 119, 27);
   width: 270px;
   height: 360px;
   border-radius: 10px;
@@ -176,6 +175,10 @@ button {
   box-shadow: 3px 5px 2px 0px rgba(0, 0, 0, 0.2);
   float: left;
   margin: 10px;
+}
+
+.effect_distortion {
+  background: rgb(168, 119, 27);
 }
 
 .knobs {
